@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraIQ - Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --forest: #1a3d2e;
+      --forest-light: #2d5a45;
+      --cream: #faf8f5;
+      --cream-dark: #f0ebe3;
+      --charcoal: #2d2d2d;
+      --charcoal-light: #4a4a4a;
+      --terracotta: #c4705a;
+      --terracotta-light: #d98973;
+      --sage: #8fa68e;
+      --sage-light: #b8c9b7;
+      --stone: #9c9588;
+      --mist: #e8e4de;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Header - asymmetric design */
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--cream-dark);
+      padding: 18px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--forest);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    .brand-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--forest);
+      letter-spacing: -0.01em;
+    }
+
+    .brand-text span {
+      font-size: 0.6875rem;
+      color: var(--stone);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 34px;
+      height: 34px;
+      background: var(--sage);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      color: var(--charcoal);
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid var(--cream-dark);
+      padding: 10px 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--charcoal-light);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .logout-btn:hover {
+      border-color: var(--terracotta);
+      color: var(--terracotta);
+    }
+
+    /* Main container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 40px 48px;
+    }
+
+    /* Welcome section - editorial style */
+    .welcome-section {
+      margin-bottom: 40px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--cream-dark);
+    }
+
+    .welcome-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.25rem;
+      font-weight: 600;
+      color: var(--forest);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .welcome-section p {
+      color: var(--stone);
+      font-size: 1rem;
+      max-width: 520px;
+    }
+
+    /* Stats - varied card sizes */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 24px;
+      border: 1px solid var(--cream-dark);
+      position: relative;
+    }
+
+    .stat-card:first-child {
+      background: var(--forest);
+      color: white;
+      border: none;
+    }
+
+    .stat-card:first-child .stat-label {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .stat-card:first-child .stat-value {
+      color: white;
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cream);
+    }
+
+    .stat-card:first-child .stat-icon {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .stat-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--forest);
+    }
+
+    .stat-card:first-child .stat-icon svg {
+      fill: white;
+    }
+
+    .stat-change {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      padding: 4px 10px;
+      background: var(--sage-light);
+      color: var(--forest);
+    }
+
+    .stat-card:first-child .stat-change {
+      background: rgba(255,255,255,0.15);
+      color: white;
+    }
+
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--forest);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--stone);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* CTA section */
+    .cta-section {
+      background: white;
+      border: 1px solid var(--cream-dark);
+      padding: 40px;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 300px;
+      height: 100%;
+      background: linear-gradient(135deg, transparent 0%, var(--cream) 100%);
+      opacity: 0.5;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-content h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--forest);
+      margin-bottom: 8px;
+    }
+
+    .cta-content p {
+      color: var(--stone);
+      font-size: 0.9375rem;
+      max-width: 420px;
+    }
+
+    .cta-btn {
+      background: var(--terracotta);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      z-index: 1;
+      white-space: nowrap;
+    }
+
+    .cta-btn:hover {
+      background: var(--terracotta-light);
+    }
+
+    /* Two column layout */
+    .two-column {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--cream-dark);
+      padding: 28px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--forest);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-title svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--sage);
+    }
+
+    .card-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      color: var(--stone);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border: 1px solid var(--cream-dark);
+    }
+
+    .chart-container {
+      height: 260px;
+    }
+
+    /* Dataset grid */
+    .datasets-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dataset-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--cream);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dataset-item:hover {
+      border-color: var(--sage);
+      background: white;
+    }
+
+    .dataset-name {
+      font-weight: 500;
+      color: var(--charcoal);
+      font-size: 0.875rem;
+    }
+
+    .dataset-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      color: var(--stone);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .dataset-arrow {
+      width: 16px;
+      height: 16px;
+      fill: var(--stone);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .dataset-item:hover .dataset-arrow {
+      opacity: 1;
+    }
+
+    /* Features section */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: var(--forest);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--cream-dark);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: white;
+      border: 1px solid var(--cream-dark);
+      padding: 28px;
+      transition: all 0.25s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--sage);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .feature-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--forest);
+    }
+
+    .feature-card h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--forest);
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      font-size: 0.8125rem;
+      color: var(--stone);
+      line-height: 1.7;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 40px;
+      color: var(--stone);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      border-top: 1px solid var(--cream-dark);
+      margin-top: 40px;
+    }
+
+    /* Texture overlay */
+    .texture-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.012;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      z-index: 1000;
+    }
+
+    @media (max-width: 1024px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 16px 24px;
+      }
+      .container {
+        padding: 24px;
+      }
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      .cta-section {
+        flex-direction: column;
+        text-align: center;
+        padding: 32px 24px;
+      }
+      .welcome-section h2 {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="texture-overlay"></div>
+
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>TerraIQ</h1>
+        <span>Dashboard</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="user-info">
+        <div class="user-avatar">A</div>
+        <span class="user-name" id="username">Admin</span>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="welcome-section">
+      <h2>Welcome back</h2>
+      <p>Track emission trends, forecast future outputs, and make data-driven sustainability decisions.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          </div>
+          <span class="stat-change">+12%</span>
+        </div>
+        <div class="stat-value">30</div>
+        <div class="stat-label">Datasets Available</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          </div>
+          <span class="stat-change">94%</span>
+        </div>
+        <div class="stat-value">95%</div>
+        <div class="stat-label">Prediction Accuracy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10z"/></svg>
+          </div>
+          <span class="stat-change">+8</span>
+        </div>
+        <div class="stat-value">30</div>
+        <div class="stat-label">Companies Tracked</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+          </div>
+          <span class="stat-change">5yr</span>
+        </div>
+        <div class="stat-value">2029</div>
+        <div class="stat-label">Forecast Horizon</div>
+      </div>
+    </div>
+
+    <div class="cta-section">
+      <div class="cta-content">
+        <h3>Ready to forecast emissions?</h3>
+        <p>Use our prediction model to analyze carbon trends and generate multi-year forecasts for any company.</p>
+      </div>
+      <button class="cta-btn" onclick="goToModel()">Launch Predictor</button>
+    </div>
+
+    <div class="two-column">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+            Industry Emission Trends
+          </div>
+          <span class="card-badge">2024 Data</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="trendsChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+            Sample Datasets
+          </div>
+          <span class="card-badge">Ready</span>
+        </div>
+        <div class="datasets-list">
+          <div class="dataset-item" onclick="goToModelWithData('tesla')">
+            <div>
+              <div class="dataset-name">Tesla Inc</div>
+              <div class="dataset-meta">Automotive • 6 years</div>
+            </div>
+            <svg class="dataset-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+          </div>
+          <div class="dataset-item" onclick="goToModelWithData('apple')">
+            <div>
+              <div class="dataset-name">Apple Inc</div>
+              <div class="dataset-meta">Technology • 6 years</div>
+            </div>
+            <svg class="dataset-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+          </div>
+          <div class="dataset-item" onclick="goToModelWithData('microsoft')">
+            <div>
+              <div class="dataset-name">Microsoft</div>
+              <div class="dataset-meta">Technology • 6 years</div>
+            </div>
+            <svg class="dataset-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+          </div>
+          <div class="dataset-item" onclick="goToModelWithData('amazon')">
+            <div>
+              <div class="dataset-name">Amazon</div>
+              <div class="dataset-meta">E-commerce • 6 years</div>
+            </div>
+            <svg class="dataset-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+          </div>
+          <div class="dataset-item" onclick="goToModelWithData('tata_steel')">
+            <div>
+              <div class="dataset-name">Tata Steel</div>
+              <div class="dataset-meta">Manufacturing • 6 years</div>
+            </div>
+            <svg class="dataset-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+          </div>
+          <div class="dataset-item" onclick="goToModelWithData('shell')">
+            <div>
+              <div class="dataset-name">Shell plc</div>
+              <div class="dataset-meta">Energy • 6 years</div>
+            </div>
+            <svg class="dataset-arrow" viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Platform Features</h3>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        </div>
+        <h4>ML-Powered Forecasts</h4>
+        <p>Statistical models with AI enhancement for accurate emission predictions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        </div>
+        <h4>Trend Visualization</h4>
+        <p>Clear charts and graphs to understand emission patterns over time.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+        </div>
+        <h4>Confidence Intervals</h4>
+        <p>Upper and lower bounds to understand prediction uncertainty.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    TerraIQ — Carbon Intelligence Platform
+  </footer>
+
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+    document.getElementById('username').textContent = localStorage.getItem('username') || 'Admin';
+    
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('username');
+      window.location.href = 'login.html';
+    }
+    
+    function goToModel() {
+      window.location.href = 'index.html';
+    }
+    
+    function goToModelWithData(company) {
+      localStorage.setItem('selectedCompany', company);
+      window.location.href = 'index.html?company=' + company;
+    }
+
+    // Chart with muted, professional colors
+    new Chart(document.getElementById('trendsChart'), {
+      type: 'line',
+      data: {
+        labels: ['2019','2020','2021','2022','2023','2024'],
+        datasets: [
+          {
+            label: 'Technology',
+            data: [320,280,250,220,195,175],
+            borderColor: '#1a3d2e',
+            backgroundColor: 'rgba(26, 61, 46, 0.08)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#1a3d2e'
+          },
+          {
+            label: 'Manufacturing',
+            data: [2800,2650,2850,2720,2680,2600],
+            borderColor: '#c4705a',
+            backgroundColor: 'rgba(196, 112, 90, 0.06)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#c4705a'
+          },
+          {
+            label: 'Energy',
+            data: [5200,5100,5350,5500,5450,5300],
+            borderColor: '#9c9588',
+            backgroundColor: 'rgba(156, 149, 136, 0.06)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#9c9588'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: { family: 'Inter', size: 11 }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.03)' },
+            ticks: {
+              callback: v => v + 'K',
+              font: { family: 'Inter', size: 10 }
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter', size: 10 } }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

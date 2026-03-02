@@ -1,0 +1,30 @@
+{
+  "name": "carbontrack-ai",
+  "version": "1.0.0",
+  "description": "CarbonTrack AI - Smart Carbon Emission Prediction System",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "multer": "^2.1.0"
+  },
+  "keywords": [
+    "carbon-emissions",
+    "esg",
+    "sustainability",
+    "machine-learning",
+    "prediction",
+    "climate",
+    "greenhouse-gas"
+  ],
+  "author": "CarbonTrack AI Team",
+  "license": "MIT"
+}

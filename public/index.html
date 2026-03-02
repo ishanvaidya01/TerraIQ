@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraIQ - Prediction Model</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --forest: #1a3d2e;
+      --forest-light: #2d5a45;
+      --cream: #faf8f5;
+      --cream-dark: #f0ebe3;
+      --charcoal: #2d2d2d;
+      --charcoal-light: #4a4a4a;
+      --terracotta: #c4705a;
+      --terracotta-light: #d98973;
+      --sage: #8fa68e;
+      --sage-light: #b8c9b7;
+      --stone: #9c9588;
+      --mist: #e8e4de;
+      --error: #b85c5c;
+      --success: #5a8a5a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--cream-dark);
+      padding: 18px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--forest);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    .brand-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--forest);
+    }
+
+    .back-btn {
+      background: transparent;
+      border: 1px solid var(--cream-dark);
+      padding: 10px 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--charcoal-light);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn:hover {
+      border-color: var(--forest);
+      color: var(--forest);
+    }
+
+    .back-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 48px;
+    }
+
+    /* Page header */
+    .page-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--cream-dark);
+    }
+
+    .page-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.875rem;
+      font-weight: 600;
+      color: var(--forest);
+      margin-bottom: 6px;
+    }
+
+    .page-header p {
+      color: var(--stone);
+      font-size: 0.9375rem;
+    }
+
+    /* Navigation tabs - pill style */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid var(--cream-dark);
+      padding-bottom: 16px;
+    }
+
+    .nav-tab {
+      padding: 12px 20px;
+      border: none;
+      background: transparent;
+      color: var(--stone);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      position: relative;
+    }
+
+    .nav-tab:hover {
+      color: var(--charcoal);
+    }
+
+    .nav-tab.active {
+      color: var(--forest);
+      background: var(--cream);
+    }
+
+    .nav-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -17px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--forest);
+    }
+
+    /* Sections */
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border: 1px solid var(--cream-dark);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--forest);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--sage);
+    }
+
+    /* Form grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      padding: 12px 14px;
+      border: 1px solid var(--cream-dark);
+      border-radius: 0;
+      font-size: 0.875rem;
+      font-family: 'Inter', sans-serif;
+      background: var(--cream);
+      color: var(--charcoal);
+      transition: all 0.2s ease;
+    }
+
+    .form-input:hover,
+    .form-select:hover,
+    .form-textarea:hover {
+      border-color: var(--sage);
+      background: white;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--forest);
+      background: white;
+    }
+
+    .form-textarea {
+      min-height: 140px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+    }
+
+    /* File upload */
+    .file-upload {
+      border: 2px dashed var(--cream-dark);
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--cream);
+    }
+
+    .file-upload:hover {
+      border-color: var(--sage);
+      background: white;
+    }
+
+    .file-upload.has-file {
+      border-color: var(--success);
+      border-style: solid;
+      background: #f8faf8;
+    }
+
+    .file-upload input {
+      display: none;
+    }
+
+    .file-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 12px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--stone);
+    }
+
+    .file-upload.has-file .file-icon svg {
+      fill: var(--success);
+    }
+
+    .file-text {
+      color: var(--stone);
+      font-size: 0.8125rem;
+    }
+
+    .file-text strong {
+      color: var(--charcoal);
+      font-weight: 500;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 14px 24px;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .btn-primary {
+      background: var(--forest);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--forest-light);
+    }
+
+    .btn-secondary {
+      background: var(--cream);
+      color: var(--charcoal);
+      border: 1px solid var(--cream-dark);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--stone);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    /* Sample data grid */
+    .sample-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .sample-btn {
+      background: var(--cream);
+      border: 1px solid var(--cream-dark);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .sample-btn:hover {
+      border-color: var(--sage);
+      background: white;
+    }
+
+    .sample-btn.active {
+      border-color: var(--forest);
+      background: var(--forest);
+    }
+
+    .sample-btn h5 {
+      font-size: 0.8125rem;
+      color: var(--charcoal);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .sample-btn.active h5 {
+      color: white;
+    }
+
+    .sample-btn p {
+      font-size: 0.6875rem;
+      color: var(--stone);
+    }
+
+    .sample-btn.active p {
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Status messages */
+    .status-message {
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 0.8125rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-message.success {
+      background: #f4f8f4;
+      border-left: 3px solid var(--success);
+      color: var(--success);
+    }
+
+    .status-message.error {
+      background: #faf4f4;
+      border-left: 3px solid var(--error);
+      color: var(--error);
+    }
+
+    .status-message.loading {
+      background: #f5f7f5;
+      border-left: 3px solid var(--sage);
+      color: var(--forest);
+    }
+
+    /* KPI grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .kpi-card {
+      background: var(--cream);
+      padding: 20px;
+      text-align: center;
+      border: 1px solid var(--cream-dark);
+    }
+
+    .kpi-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.625rem;
+      font-weight: 600;
+      color: var(--forest);
+      margin-bottom: 4px;
+    }
+
+    .kpi-label {
+      font-size: 0.625rem;
+      color: var(--stone);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Chart container */
+    .chart-container {
+      background: white;
+      border: 1px solid var(--cream-dark);
+      padding: 20px;
+      margin-bottom: 20px;
+      height: 360px;
+    }
+
+    /* Prediction cards */
+    .prediction-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .prediction-card {
+      background: var(--cream);
+      border: 1px solid var(--cream-dark);
+      padding: 20px;
+      position: relative;
+    }
+
+    .prediction-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--forest);
+    }
+
+    .prediction-year {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      color: var(--stone);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+
+    .prediction-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--forest);
+    }
+
+    .prediction-range {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.625rem;
+      color: var(--stone);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--cream-dark);
+    }
+
+    .prediction-reasoning {
+      font-size: 0.75rem;
+      color: var(--charcoal-light);
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    /* Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.8125rem;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--cream-dark);
+    }
+
+    .data-table th {
+      background: var(--cream);
+      font-weight: 500;
+      color: var(--charcoal);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .data-table tr:hover {
+      background: var(--cream);
+    }
+
+    /* Accuracy bar */
+    .accuracy-bar {
+      height: 6px;
+      background: var(--cream-dark);
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .accuracy-fill {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+
+    .accuracy-fill.excellent { background: var(--success); }
+    .accuracy-fill.good { background: var(--sage); }
+    .accuracy-fill.fair { background: var(--stone); }
+    .accuracy-fill.poor { background: var(--terracotta); }
+
+    /* Model list */
+    .model-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      background: var(--cream);
+      border: 1px solid var(--cream-dark);
+      margin-bottom: 10px;
+    }
+
+    .model-info h4 {
+      font-size: 0.9375rem;
+      color: var(--forest);
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
+    .model-info p {
+      font-size: 0.75rem;
+      color: var(--stone);
+    }
+
+    .model-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 8px 14px;
+      font-size: 0.6875rem;
+    }
+
+    /* JSON preview */
+    .json-preview {
+      background: var(--cream);
+      border: 1px solid var(--cream-dark);
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--charcoal-light);
+      max-height: 240px;
+      overflow-y: auto;
+      line-height: 1.7;
+    }
+
+    /* Two column layout */
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 968px) {
+      .two-column { grid-template-columns: 1fr; }
+    }
+
+    /* Divider */
+    .divider {
+      text-align: center;
+      margin: 16px 0;
+      position: relative;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--cream-dark);
+    }
+
+    .divider span {
+      background: white;
+      padding: 0 16px;
+      color: var(--stone);
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      position: relative;
+    }
+
+    /* Texture overlay */
+    .texture-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.012;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .header { padding: 16px 24px; }
+      .container { padding: 24px; }
+      .nav-tabs { flex-wrap: wrap; }
+      .sample-grid { grid-template-columns: repeat(2, 1fr); }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="texture-overlay"></div>
+
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+      </div>
+      <div class="brand-text"><h1>TerraIQ</h1></div>
+    </div>
+    <button class="back-btn" onclick="goToDashboard()">
+      <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+      Back to Dashboard
+    </button>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <h2>Carbon Emission Predictor</h2>
+      <p>Train models on historical data and generate multi-year emission forecasts.</p>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showSection('train')">Train Model</button>
+      <button class="nav-tab" onclick="showSection('forecast')">Generate Forecast</button>
+      <button class="nav-tab" onclick="showSection('compare')">Compare Accuracy</button>
+      <button class="nav-tab" onclick="showSection('analyze')">Analyze Discrepancies</button>
+      <button class="nav-tab" onclick="showSection('models')">My Models</button>
+    </div>
+
+    <!-- Train Model Section -->
+    <div id="train-section" class="section active">
+      <div class="two-column">
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10z"/></svg>
+            Company Information
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Company Name</label>
+              <input type="text" id="companyName" class="form-input" placeholder="e.g., Tesla Inc">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Industry</label>
+              <select id="industry" class="form-select">
+                <option value="Technology">Technology</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Energy">Energy</option>
+                <option value="Retail">Retail</option>
+                <option value="Financial">Financial Services</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Region</label>
+              <select id="region" class="form-select">
+                <option value="North America">North America</option>
+                <option value="Europe">Europe</option>
+                <option value="Asia Pacific">Asia Pacific</option>
+                <option value="Latin America">Latin America</option>
+                <option value="Middle East">Middle East</option>
+                <option value="Africa">Africa</option>
+                <option value="Global">Global</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reporting Standard</label>
+              <select id="standard" class="form-select">
+                <option value="GHG Protocol">GHG Protocol</option>
+                <option value="CDP">CDP</option>
+                <option value="GRI">GRI</option>
+                <option value="SASB">SASB</option>
+                <option value="TCFD">TCFD</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+            Upload Data (CSV/JSON)
+          </div>
+          <div class="file-upload" id="fileUpload" onclick="document.getElementById('trainingFile').click()">
+            <input type="file" id="trainingFile" accept=".csv,.json" onchange="handleFileSelect(this)">
+            <div class="file-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+            </div>
+            <div class="file-text" id="fileText">
+              Click to upload file<br>
+              <small>Format: year, emissions (tons CO2)</small>
+            </div>
+          </div>
+          <div class="divider"><span>or</span></div>
+          <div class="form-group">
+            <label class="form-label">Enter Data Manually (JSON)</label>
+            <textarea id="manualData" class="form-textarea" placeholder='[
+  {"year": 2018, "emissions": 50000},
+  {"year": 2019, "emissions": 52500},
+  {"year": 2020, "emissions": 54000},
+  {"year": 2021, "emissions": 53000},
+  {"year": 2022, "emissions": 51000},
+  {"year": 2023, "emissions": 49000}
+]'></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          Quick Load Sample Data
+        </div>
+        <div class="sample-grid">
+          <div class="sample-btn" onclick="loadSampleData('tesla')"><h5>Tesla Inc</h5><p>Automotive</p></div>
+          <div class="sample-btn" onclick="loadSampleData('apple')"><h5>Apple Inc</h5><p>Technology</p></div>
+          <div class="sample-btn" onclick="loadSampleData('microsoft')"><h5>Microsoft</h5><p>Technology</p></div>
+          <div class="sample-btn" onclick="loadSampleData('google')"><h5>Google</h5><p>Technology</p></div>
+          <div class="sample-btn" onclick="loadSampleData('amazon')"><h5>Amazon</h5><p>E-commerce</p></div>
+          <div class="sample-btn" onclick="loadSampleData('shell')"><h5>Shell</h5><p>Energy</p></div>
+          <div class="sample-btn" onclick="loadSampleData('tata_steel')"><h5>Tata Steel</h5><p>Manufacturing</p></div>
+          <div class="sample-btn" onclick="loadSampleData('infosys')"><h5>Infosys</h5><p>IT Services</p></div>
+          <div class="sample-btn" onclick="loadSampleData('hdfc')"><h5>HDFC Bank</h5><p>Financial</p></div>
+          <div class="sample-btn" onclick="loadSampleData('toyota')"><h5>Toyota</h5><p>Automotive</p></div>
+          <div class="sample-btn" onclick="loadSampleData('siemens')"><h5>Siemens</h5><p>Manufacturing</p></div>
+          <div class="sample-btn" onclick="loadSampleData('coca_cola')"><h5>Coca-Cola</h5><p>Manufacturing</p></div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="trainModel()">Train Model</button>
+          <button class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+        </div>
+      </div>
+
+      <div id="trainResults"></div>
+    </div>
+
+    <!-- Forecast Section -->
+    <div id="forecast-section" class="section">
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          Generate Emission Forecast
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Select Trained Model</label>
+            <select id="forecastModel" class="form-select">
+              <option value="">-- Select a model --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Years to Predict (1-20)</label>
+            <input type="number" id="yearsToPredict" class="form-input" value="5" min="1" max="20">
+          </div>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="generateForecast()">Generate Forecast</button>
+          <button class="btn btn-secondary" onclick="refreshModelList()">Refresh Models</button>
+        </div>
+      </div>
+
+      <div id="forecastResults"></div>
+    </div>
+
+    <!-- Compare Section -->
+    <div id="compare-section" class="section">
+      <div class="two-column">
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
+            Predictions (JSON)
+          </div>
+          <div class="form-group">
+            <textarea id="predictionsData" class="form-textarea" placeholder='[
+  {"year": 2024, "predicted_emissions": 47000, "confidence_lower": 45000, "confidence_upper": 49000},
+  {"year": 2025, "predicted_emissions": 45000, "confidence_lower": 42000, "confidence_upper": 48000}
+]'></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Actual Data (JSON)
+          </div>
+          <div class="form-group">
+            <textarea id="actualData" class="form-textarea" placeholder='[
+  {"year": 2024, "emissions": 46500},
+  {"year": 2025, "emissions": 44800}
+]'></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="comparePredictions()">Compare & Evaluate</button>
+          <button class="btn btn-secondary" onclick="loadSampleComparison()">Load Sample</button>
+        </div>
+      </div>
+
+      <div id="compareResults"></div>
+    </div>
+
+    <!-- Analyze Discrepancies Section -->
+    <div id="analyze-section" class="section">
+      <div class="two-column">
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            Dataset Information
+          </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label">Company Name</label>
+            <input type="text" id="analyzeCompanyName" class="form-input" placeholder="e.g., Tesla Inc">
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Industry</label>
+              <select id="analyzeIndustry" class="form-select">
+                <option value="Technology">Technology</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Energy">Energy</option>
+                <option value="Retail">Retail</option>
+                <option value="Financial">Financial Services</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Region</label>
+              <select id="analyzeRegion" class="form-select">
+                <option value="North America">North America</option>
+                <option value="Europe">Europe</option>
+                <option value="Asia Pacific">Asia Pacific</option>
+                <option value="Latin America">Latin America</option>
+                <option value="Middle East">Middle East</option>
+                <option value="Africa">Africa</option>
+                <option value="Global">Global</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+            Upload Dataset for Analysis
+          </div>
+          <div class="file-upload" id="analyzeFileUpload" onclick="document.getElementById('analyzeFile').click()">
+            <input type="file" id="analyzeFile" accept=".csv,.json" onchange="handleAnalyzeFileSelect(this)">
+            <div class="file-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+            </div>
+            <div class="file-text" id="analyzeFileText">
+              Click to upload dataset<br>
+              <small>CSV or JSON format</small>
+            </div>
+          </div>
+          <div class="divider"><span>or</span></div>
+          <div class="form-group">
+            <label class="form-label">Paste Data (JSON)</label>
+            <textarea id="analyzeData" class="form-textarea" placeholder='[
+  {"year": 2018, "emissions": 50000},
+  {"year": 2019, "emissions": 52500},
+  {"year": 2020, "emissions": 54000},
+  {"year": 2021, "emissions": 53000}
+]'></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          AI-Powered Discrepancy Analysis
+        </div>
+        <p style="color: var(--stone); font-size: 0.875rem; margin-bottom: 20px; line-height: 1.6;">
+          This tool uses Gemini AI to analyze your emission dataset for anomalies, outliers, and data quality issues. 
+          It combines statistical analysis with AI insights to identify potential problems in your data.
+        </p>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="analyzeDiscrepancies()">Analyze with Gemini AI</button>
+          <button class="btn btn-secondary" onclick="clearAnalyzeForm()">Clear</button>
+        </div>
+      </div>
+
+      <div id="analyzeResults"></div>
+    </div>
+
+    <!-- Models Section -->
+    <div id="models-section" class="section">
+      <div class="card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+          Your Trained Models
+        </div>
+        <div class="btn-group" style="margin-bottom: 20px;">
+          <button class="btn btn-secondary" onclick="loadTrainedModels()">Refresh List</button>
+        </div>
+        <div id="modelsList">
+          <p style="color: var(--stone); text-align: center; padding: 40px; font-size: 0.875rem;">
+            No trained models yet. Train a model to see it here.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
