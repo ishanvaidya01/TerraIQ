@@ -5,7 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Check if API key is available
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const USE_MOCK_MODE = !GEMINI_API_KEY || GEMINI_API_KEY === 'your_gemini_api_key_here';
+const USE_MOCK_MODE = !GEMINI_API_KEY || GEMINI_API_KEY === AIzaSyAuylU6nF1pHsMnW2DkiwLWCz_Epsqugow;
 
 // Initialize Gemini API only if key is valid
 let genAI = null;

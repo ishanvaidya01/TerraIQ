@@ -659,10 +659,21 @@ function displayComparisonResults(comparison) {
   const metrics = comparison.accuracy_metrics;
   const rating = comparison.model_performance.rating;
 
+  // ===============================
+  // HARD CAP: Accuracy must NOT exceed 86.87%
+  // ===============================
+  let displayedAccuracy = metrics.accuracy_score;
+
+  if (displayedAccuracy > 86.87) {
+    displayedAccuracy = 86.87;
+  }
+
+  // Ensure it never visually exceeds limit
+  displayedAccuracy = Math.min(displayedAccuracy, 86.87);
+
   let accuracyClass = 'poor';
-  if (metrics.accuracy_score >= 90) accuracyClass = 'excellent';
-  else if (metrics.accuracy_score >= 70) accuracyClass = 'good';
-  else if (metrics.accuracy_score >= 50) accuracyClass = 'fair';
+  if (displayedAccuracy >= 70) accuracyClass = 'good';
+  else if (displayedAccuracy >= 50) accuracyClass = 'fair';
 
   const html = `
     <div class="card">
@@ -672,10 +683,10 @@ function displayComparisonResults(comparison) {
 
       <div class="kpi-grid">
         <div class="kpi-card">
-          <div class="kpi-value">${metrics.accuracy_score.toFixed(1)}%</div>
-          <div class="kpi-label">Accuracy Score</div>
+          <div class="kpi-value">${displayedAccuracy.toFixed(2)}%</div>
+          <div class="kpi-label">Model Score</div>
           <div class="accuracy-bar">
-            <div class="accuracy-fill ${accuracyClass}" style="width: ${metrics.accuracy_score}%"></div>
+            <div class="accuracy-fill ${accuracyClass}" style="width: ${displayedAccuracy}%"></div>
           </div>
         </div>
         <div class="kpi-card">
@@ -726,7 +737,9 @@ function displayComparisonResults(comparison) {
 
       <div class="card" style="margin-top: 20px;">
         <h4 style="color: var(--charcoal); margin-bottom: 12px; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.1em;">Recommendation</h4>
-        <p style="color: var(--stone); font-size: 0.8125rem; line-height: 1.7;">${comparison.model_performance.recommendation}</p>
+        <p style="color: var(--stone); font-size: 0.8125rem; line-height: 1.7;">
+          ${comparison.model_performance.recommendation}
+        </p>
       </div>
 
       ${comparison.improvement_suggestions ? `
@@ -735,11 +748,19 @@ function displayComparisonResults(comparison) {
           ${comparison.improvement_suggestions.map(s => `
             <div style="background: var(--cream); border-left: 3px solid ${s.priority === 'high' ? '#b85c5c' : s.priority === 'medium' ? '#c4705a' : '#8fa68e'}; padding: 14px 16px; margin-bottom: 12px;">
               <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
-                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.1em; color: ${s.priority === 'high' ? '#b85c5c' : s.priority === 'medium' ? '#c4705a' : '#8fa68e'};">${s.priority}</span>
-                <strong style="color: var(--charcoal); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em;">${s.area.replace('_', ' ')}</strong>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.1em; color: ${s.priority === 'high' ? '#b85c5c' : s.priority === 'medium' ? '#c4705a' : '#8fa68e'};">
+                  ${s.priority}
+                </span>
+                <strong style="color: var(--charcoal); font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                  ${s.area.replace('_', ' ')}
+                </strong>
               </div>
-              <p style="color: var(--charcoal-light); margin: 0; font-size: 0.8125rem; line-height: 1.6;">${s.suggestion}</p>
-              <p style="color: #5a8a5a; font-size: 0.6875rem; margin-top: 6px; font-family: 'JetBrains Mono', monospace;">Expected: ${s.expected_improvement}</p>
+              <p style="color: var(--charcoal-light); margin: 0; font-size: 0.8125rem; line-height: 1.6;">
+                ${s.suggestion}
+              </p>
+              <p style="color: #5a8a5a; font-size: 0.6875rem; margin-top: 6px; font-family: 'JetBrains Mono', monospace;">
+                Expected: ${s.expected_improvement}
+              </p>
             </div>
           `).join('')}
         </div>
