@@ -5,6 +5,7 @@
 TerraIQ is a carbon-emissions forecasting dashboard that trains a statistical model from yearly company data and produces multi-year projections with confidence intervals.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
 [![Gemini](https://img.shields.io/badge/AI-Google%20Gemini%20optional-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)
