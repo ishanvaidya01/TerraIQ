@@ -1,0 +1,61 @@
+name: Feature request
+description: Suggest an improvement or a new capability for TerraIQ
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion. Explain the user problem and how it fits TerraIQ's train → forecast → compare workflow.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What is difficult or missing today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the desired behavior, including any API, data-format, or UI changes.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: dropdown
+    id: area
+    attributes:
+      label: Primary area
+      options:
+        - Data import and validation
+        - Forecasting methodology
+        - Accuracy and comparison metrics
+        - Gemini integration
+        - Dashboard and visualization
+        - Persistence, authentication, or deployment
+        - Documentation and developer experience
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Additional context
+      description: Mockups, formulas, references, or constraints. Do not include confidential company data.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues for this idea.
+          required: true
+        - label: This proposal does not require committing secrets or confidential data.
+          required: true

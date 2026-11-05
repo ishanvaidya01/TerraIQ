@@ -1,221 +1,198 @@
-# CarbonTrack AI 🌍
+# TerraIQ (CarbonTrack AI)
 
-## Smart Carbon Emission Prediction System
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![Gemini](https://img.shields.io/badge/AI-Google%20Gemini%20optional-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)
 
-CarbonTrack AI is a comprehensive, easy-to-use web application for predicting carbon emissions using machine learning. It features a clean, intuitive interface with beautiful graphs and real-world sample datasets.
+TerraIQ is a carbon-emissions forecasting dashboard that trains a statistical model from yearly company data and produces multi-year projections with confidence intervals.
 
-![CarbonTrack AI](https://img.shields.io/badge/CarbonTrack-AI-blue)
-![Version](https://img.shields.io/badge/version-1.0.0-green)
-![License](https://img.shields.io/badge/license-MIT-yellow)
+> **Naming:** The product and UI are branded **TerraIQ**. The npm package is named `carbontrack-ai`, and earlier documentation used **CarbonTrack AI**. This repository is the TerraIQ backend (`ishanvaidya01/terraiq-backend`); the names refer to the same application.
 
----
+## Overview
 
-## ✨ Features
+TerraIQ is a self-contained Node.js application for exploring corporate emissions trends. A static HTML/CSS/JavaScript frontend is served by an Express server, and an API trains per-company forecasting models from CSV, JSON, or sample data. Each model can generate a 1–20 year forecast, compare predictions against actual values, and report error metrics. Google Gemini is optional: when configured, it adds narrative analysis and AI-assisted predictions; without a key, the entire workflow runs in statistical mode.
 
-### 🔐 Authentication System
-- Secure login page with session management
-- Demo credentials: `admin` / `admin123`
+The project was built as a demonstration of a complete train → forecast → compare workflow, not as a regulatory reporting system. All trained models live in server memory and are lost on restart.
 
-### 📊 Dashboard
-- Beautiful statistics cards
-- Industry emission trends chart
-- Quick access to sample datasets
-- Feature highlights
+## Features
 
-### 🎓 Model Training
-- Train custom prediction models
-- Support for CSV and JSON data upload
-- 15+ pre-loaded real-world company datasets
-- Manual data entry option
-- AI-powered analysis (with Gemini API)
-- Statistical fallback mode (without API)
+- **Guided dashboard.** Demo sign-in, KPI cards, an industry-trend chart, and shortcuts into the prediction workflow.
+- **Model training.** Upload CSV/JSON, paste JSON manually, or quick-load one of the built-in sample companies. At least three yearly observations are required.
+- **Statistical forecasting.** Linear regression, growth-rate analysis, volatility, and a per-year efficiency decay produce 1–20 year projections with widening confidence intervals.
+- **Optional Gemini enhancement.** AI analysis and prediction narratives use `gemini-2.5-flash`; failed or missing API calls fall back to statistical output.
+- **Accuracy comparison.** Compare a forecast with actual yearly values and receive MAE, MAPE, accuracy score, confidence-interval coverage, a performance rating, and improvement suggestions.
+- **Discrepancy analysis.** Validate a dataset and surface anomalies, either with Gemini or with statistical checks.
+- **Model management.** List, inspect, and delete models for the lifetime of the server process.
+- **Sample data.** Fourteen CSV files in `data/`, twenty-one JSON snapshots in `json_samples/`, and twelve quick-load datasets embedded in the frontend.
+- **No database required.** Installation is `npm install`; there is no migration or external service to provision.
 
-### 📈 Forecast Generation
-- Generate 1-20 year emission forecasts
-- Confidence intervals for each prediction
-- Beautiful line charts with confidence bands
-- Detailed prediction cards with reasoning
-- Risk factor analysis
+## Screenshots
 
-### 📊 Accuracy Comparison
-- Compare predictions with actual data
-- MAE, MAPE, and accuracy score metrics
-- Bar charts comparing predicted vs actual
-- Improvement suggestions
-- Confidence interval accuracy tracking
+| Sign in | Dashboard |
+| :---: | :---: |
+| ![TerraIQ sign-in](Screenshots/Screenshot%202026-03-03%20061718.png) | ![TerraIQ dashboard](Screenshots/Screenshot%202026-03-03%20061745.png) |
 
-### 🗂️ Model Management
-- View all trained models
-- Model details and statistics
-- Quick forecast from model list
+![Accuracy comparison view](Screenshots/Screenshot%202026-03-03%20093231.png)
 
----
+The dashboard cards are static presentation values; they are not computed from your data. Use the comparison screen for real metrics from a model you trained.
 
-## 🚀 Quick Start
+## Architecture
 
-### Prerequisites
-- Node.js 18+ installed
-- (Optional) Google Gemini API Key for AI-powered predictions
+```mermaid
+flowchart LR
+    B["Browser<br/>public/*.html, app.js, Chart.js"]
+    E["Express server<br/>server.js"]
+    R["Prediction routes<br/>routes/predict.js"]
+    S["Statistical engine<br/>services/predictionModel.js"]
+    G["Google Gemini API<br/>optional"]
+    M[("In-memory model store<br/>Map, process lifetime")]
+    D[("Sample data<br/>data/*.csv, json_samples/*.json")]
 
-### Installation
-
-1. **Extract the project files**
-   ```bash
-   cd carbon-emission-system
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables (Optional)**
-   ```bash
-   # Copy the example environment file
-   cp .env.example .env
-   
-   # Edit .env and add your Gemini API key (optional)
-   # Get your key from: https://makersuite.google.com/app/apikey
-   ```
-
-4. **Start the server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open in browser**
-   ```
-   http://localhost:5000
-   ```
-
----
-
-## 📖 User Guide
-
-### Step 1: Login
-1. Open `http://localhost:5000`
-2. You'll be redirected to the login page
-3. Use credentials: **Username:** `admin` | **Password:** `admin123`
-4. Click "Sign In to Dashboard"
-
-### Step 2: Explore the Dashboard
-- View key statistics
-- See industry emission trends
-- Browse available sample datasets
-- Click "Launch Prediction Model" to start
-
-### Step 3: Train a Model
-1. Navigate to "Train Model" tab
-2. Either:
-   - **Quick Load:** Click any sample company button
-   - **Upload CSV:** Click the file upload area
-   - **Manual Entry:** Paste JSON data in the textarea
-3. Fill in company information
-4. Click "Train Prediction Model"
-5. View training results and statistics
-
-### Step 4: Generate Forecast
-1. Navigate to "Generate Forecast" tab
-2. Select your trained model from dropdown
-3. Choose years to predict (1-20)
-4. Click "Generate Forecast"
-5. View beautiful charts and prediction cards
-
-### Step 5: Compare Accuracy
-1. Navigate to "Compare Accuracy" tab
-2. Paste predictions JSON (from forecast results)
-3. Paste actual data JSON
-4. Click "Compare & Evaluate"
-5. View accuracy metrics and improvement suggestions
-
----
-
-## 📁 Sample Datasets Included
-
-### Technology Companies
-| Company | Industry | Trend |
-|---------|----------|-------|
-| Apple Inc | Technology | Declining |
-| Microsoft | Technology | Declining |
-| Infosys | IT Services | Declining |
-| Wipro | IT Services | Declining |
-
-### Manufacturing & Energy
-| Company | Industry | Trend |
-|---------|----------|-------|
-| Tesla Inc | Automotive | Declining |
-| Tata Steel | Manufacturing | Stable |
-| Reliance | Energy | Growing |
-| Adani | Energy | Growing |
-| Larsen & Toubro | Construction | Stable |
-| Maruti Suzuki | Automotive | Stable |
-
-### Financial Services
-| Company | Industry | Trend |
-|---------|----------|-------|
-| HDFC Bank | Financial | Declining |
-| ICICI Bank | Financial | Declining |
-| SBI | Financial | Declining |
-
-### E-commerce
-| Company | Industry | Trend |
-|---------|----------|-------|
-| Amazon | E-commerce | Variable |
-
----
-
-## 🔌 API Endpoints
-
-### Train a Model
-```http
-POST /api/predict/train
-Content-Type: multipart/form-data
-
-Parameters:
-- company_name: Company name
-- industry: Industry type
-- region: Geographic region
-- standard: Reporting standard
-- dataset: CSV file OR training_data: JSON array
+    B -->|"static files"| E
+    B -->|"JSON or multipart requests"| R
+    E --> R
+    R --> S
+    R --> M
+    S -->|"when GEMINI_API_KEY is set"| G
+    S -->|"fallback and default path"| S
+    D --> B
 ```
 
-### Generate Forecast
-```http
-POST /api/predict/forecast
-Content-Type: application/json
+The Express server serves `public/` as static assets and mounts the API under `/api/predict`. There is no database, session store, job queue, or background worker.
 
-{
-  "model_id": "model_1234567890",
-  "years_to_predict": 5
-}
+## Tech Stack
+
+| Layer | Technology |
+| :--- | :--- |
+| Runtime | Node.js 18+ with native ES modules |
+| Server | Express 4, CORS, dotenv |
+| Uploads and parsing | Multer (memory storage), csv-parser |
+| Forecasting | Custom statistical model in `services/predictionModel.js` |
+| AI (optional) | `@google/generative-ai`, model `gemini-2.5-flash` |
+| Frontend | Static HTML, CSS, vanilla JavaScript |
+| Charts | Chart.js 4.4.1 from jsDelivr |
+| Fonts | Playfair Display, Inter, JetBrains Mono via Google Fonts |
+| Persistence | None — trained models are held in a process-level `Map` |
+
+## Project Structure
+
+```text
+terraiq-backend/
+├── server.js                    # Express app, static hosting, health routes
+├── routes/
+│   └── predict.js               # Training, forecasting, comparison, analysis endpoints
+├── services/
+│   └── predictionModel.js       # Statistical engine and optional Gemini integration
+├── public/
+│   ├── login.html               # Demo sign-in page
+│   ├── dashboard.html           # Overview and dataset shortcuts
+│   ├── index.html               # Training, forecast, comparison, and analysis UI
+│   └── app.js                   # Frontend state, API calls, and charts
+├── data/                        # 14 sample CSV files (year,emissions)
+├── json_samples/                # 21 JSON emission snapshots
+├── Screenshots/                 # Interface screenshots used in this README
+├── .env.example                 # Environment variable template (placeholders)
+└── package.json                 # Scripts and dependencies
 ```
 
-### Compare Predictions
-```http
-POST /api/predict/compare
-Content-Type: application/json
+## Prerequisites
 
-{
-  "predictions_json": [...],
-  "actual_data": [...]
-}
+- **Node.js 18 or newer** and npm. `npm run dev` uses `node --watch`, available from Node.js 18.11.
+- A modern browser with JavaScript enabled.
+- **Optional:** a Google Gemini API key for AI-assisted analysis. Get one from [Google AI Studio](https://aistudio.google.com/app/apikey).
+
+## Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/ishanvaidya01/terraiq-backend.git
+cd terraiq-backend
 ```
 
-### List Models
-```http
-GET /api/predict/models
+### 2. Install dependencies
+
+```bash
+npm install
 ```
 
-### Get Sample Data
-```http
-GET /api/predict/sample-data
+### 3. Configure the environment (optional for Gemini)
+
+```bash
+# macOS / Linux
+cp .env.example .env
+
+# Windows PowerShell
+Copy-Item .env.example .env
 ```
 
----
+Set `GEMINI_API_KEY` in `.env` if you want AI-assisted output. Leave it blank or unset to use statistical mode. Never commit `.env`.
 
-## 📊 CSV Format
+### 4. Start the application
 
-Your CSV file should have these columns:
+```bash
+# Production-style start
+npm start
+
+# Development with automatic restart on file changes
+npm run dev
+```
+
+Open [http://localhost:5000](http://localhost:5000). You will be redirected to the demo sign-in page.
+
+### 5. Sign in with the demo account
+
+```text
+Username: admin
+Password: admin123
+```
+
+The credentials are displayed on the login page and are validated entirely in the browser. They are a demo gate, **not authentication**. Do not deploy this application with sensitive data or assume those credentials protect the API.
+
+## Environment Variables
+
+| Variable | Required | Default | Description |
+| :--- | :---: | :--- | :--- |
+| `GEMINI_API_KEY` | No | — | Google Gemini API key. When absent or invalid, the app runs in statistical mode. |
+| `PORT` | No | `5000` | Port for the Express server. |
+| `NODE_ENV` | No | — | Conventional Node environment label; not used for branching in the current code. |
+
+The frontend hardcodes its API base as `http://localhost:5000/api` in `public/app.js`. If you change `PORT`, update that constant as well or the UI will keep calling port 5000.
+
+## Run Commands
+
+| Command | Purpose |
+| :--- | :--- |
+| `npm install` | Install dependencies |
+| `npm start` | Start the server with `node server.js` |
+| `npm run dev` | Start with `node --watch server.js` and reload on changes |
+| `npm test` | Not defined — no automated test suite is configured |
+| `npm run lint` | Not defined — no linter is configured |
+
+## Usage
+
+1. Sign in with the demo account. The browser stores `isLoggedIn` and `username` in `localStorage`; `dashboard.html` and `index.html` redirect to the login page when the flag is missing.
+2. On the dashboard, note the quick-start cards. Selecting a company opens the predictor with a built-in sample dataset.
+3. Open **Train Model**. Choose a sample company, upload a CSV/JSON file, or paste an array of `{ "year": 2020, "emissions": 120000 }` objects. Fill in company, industry, region, and reporting standard, then train.
+4. Open **Generate Forecast**, select the trained model, and choose 1–20 years. The response includes predictions, confidence bounds, methodology, risk factors, and a chart.
+5. Open **Compare Accuracy** and supply prediction and actual arrays in the same year space. The UI shows MAE, MAPE, accuracy, confidence coverage, and suggestions.
+6. Open **Analyze Discrepancies** to inspect a dataset for anomalies. Gemini adds narrative findings when configured; otherwise the statistical checks run.
+7. Models can be listed, inspected, or deleted from the model section. They disappear when the process restarts.
+
+## CSV Upload Flow
+
+Training accepts `multipart/form-data` with a `dataset` file. Multer keeps the file in memory and enforces a **10 MB** limit. Files are accepted when the MIME type is CSV, Excel, XLSX, or JSON, or when the filename ends in `.csv` or `.json`.
+
+The CSV parser reads the first matching columns:
+
+| Field | Accepted column names |
+| :--- | :--- |
+| Year | `year`, `Year`, `YEAR`, `year_reported` |
+| Emissions | `emissions`, `Emissions`, `EMISSIONS`, `carbon_emissions`, `total_emissions`, `co2` |
+
+Rows without a numeric year and emissions value are skipped. At least three valid rows are required for training; discrepancy analysis requires at least two.
+
 ```csv
 year,emissions
 2018,50000
@@ -226,152 +203,110 @@ year,emissions
 2023,49000
 ```
 
----
+To train with JSON instead, send `training_data` as an array or a JSON string. To exercise the pipeline without a file, send `use_sample=true`. The included CSVs are demonstration data; confirm any figure against the company's published disclosures before relying on it.
 
-## 🛠️ Project Structure
+## API Endpoints
 
+Base URL: `http://localhost:5000`. All prediction endpoints are JSON unless noted.
+
+| Method | Path | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/status` | Health/status payload with version and service availability |
+| `POST` | `/api/predict/train` | Train a model from `multipart/form-data` (`dataset`) or JSON (`training_data`) |
+| `POST` | `/api/predict/forecast` | Generate a forecast for a stored model |
+| `POST` | `/api/predict/compare` | Compare predictions with actual values |
+| `GET` | `/api/predict/models` | List models in memory |
+| `GET` | `/api/predict/models/:modelId` | Get one model's training details |
+| `DELETE` | `/api/predict/models/:modelId` | Delete one model |
+| `GET` | `/api/predict/sample-data` | Generate sample training data; optional `company_name` query |
+| `POST` | `/api/predict/analyze-discrepancies` | Analyze a dataset; multipart `dataset` or JSON `dataset` |
+| `GET` | `/api/predict/gemini-status` | Report whether Gemini is configured and reachable |
+
+### Train
+
+```bash
+curl -X POST http://localhost:5000/api/predict/train \
+  -F "company_name=Acme Ltd" \
+  -F "industry=Manufacturing" \
+  -F "region=Asia Pacific" \
+  -F "standard=GHG Protocol" \
+  -F "dataset=@data/sample_tesla.csv"
 ```
-carbon-emission-system/
-├── data/                       # Sample datasets
-│   ├── sample_tesla.csv
-│   ├── sample_apple.csv
-│   ├── sample_microsoft.csv
-│   └── ... (15+ datasets)
-├── public/                     # Frontend files
-│   ├── login.html             # Login page
-│   ├── dashboard.html         # Dashboard
-│   ├── index.html             # Prediction model
-│   └── app.js                 # Frontend logic
-├── routes/                     # API routes
-│   └── predict.js             # Prediction endpoints
-├── services/                   # Business logic
-│   └── predictionModel.js     # ML prediction engine
-├── server.js                   # Main server
-├── package.json               # Dependencies
-├── .env.example               # Environment template
-└── README.md                  # This file
+
+Minimum three data points. The response contains `model_id`, training summary, statistical features, and model context.
+
+### Forecast
+
+```bash
+curl -X POST http://localhost:5000/api/predict/forecast \
+  -H "Content-Type: application/json" \
+  -d "{\"model_id\":\"model_...\",\"years_to_predict\":5}"
 ```
 
----
+Provide either `model_id` or `company_name`. `years_to_predict` must be between 1 and 20 and defaults to 5.
 
-## 🎯 For Invigilators / Evaluators
+### Compare
 
-### What Makes This Project Special?
+```bash
+curl -X POST http://localhost:5000/api/predict/compare \
+  -H "Content-Type: application/json" \
+  -d "{\"predictions_json\":[{\"year\":2024,\"predicted_emissions\":48000,\"confidence_lower\":45000,\"confidence_upper\":51000}],\"actual_data\":[{\"year\":2024,\"emissions\":49000}]}"
+```
 
-1. **Complete Authentication Flow**
-   - Login → Dashboard → Model Interface
-   - Session management with localStorage
+If `predictions_json` is omitted, the route uses predictions stored by the last forecast for a supplied `model_id`. Actual values are matched to predictions by year.
 
-2. **Real-World Data**
-   - 15+ actual company datasets
-   - Various industries and trends
+### Errors
 
-3. **Visual Analytics**
-   - Beautiful charts using Chart.js
-   - KPI cards and statistics
-   - Confidence interval visualization
+Validation failures return `400` with `error` and `message`. Missing models return `404`; upstream or unexpected failures return `500`. There is no API authentication layer.
 
-4. **ML Prediction Engine**
-   - Statistical analysis with linear regression
-   - Optional Gemini AI enhancement
-   - Works without API key (fallback mode)
+## How the Model Works
 
-5. **Complete Workflow**
-   - Train → Predict → Compare → Improve
+The statistical engine calculates mean, minimum, maximum, average growth rate, linear-regression slope, volatility of growth rates, and a recent-versus-historical trend. Forecasts start from the last observed value, add the regression slope per year, apply a 2% annual efficiency decay (`0.98^i`), and clamp at zero. The confidence range is derived from volatility and widens by 20% per forecast year.
 
-### Key Features to Demo
+Comparison computes:
 
-1. **Login System**
-   - Show the login page
-   - Enter credentials
-   - Dashboard loads
+- **MAE** — mean absolute error in emissions units.
+- **MAPE** — mean absolute percentage error.
+- **Accuracy score** — `max(0, 100 - MAPE)`.
+- **Confidence accuracy** — share of actual values inside the predicted interval.
 
-2. **Sample Datasets**
-   - Show the dashboard datasets
-   - Click any company
-   - Data auto-fills in the model
+The code labels accuracy ≥90 as Excellent, ≥70 as Good, and ≥50 as Fair. These are heuristics, not a guarantee of predictive validity. Statistical forecasts are reported with a model accuracy estimate of 65–75 depending on data volume; Gemini output may supply a different narrative estimate. Treat every figure as an estimate.
 
-3. **Train Model**
-   - Load sample data
-   - Click "Train Prediction Model"
-   - Show statistics and AI analysis
+## Testing
 
-4. **Generate Forecast**
-   - Select trained model
-   - Choose 5 years
-   - Show the chart and predictions
+There is no automated test suite, linter, or formatter in this repository, and `package.json` defines only `start` and `dev`. Verification is manual: train from a sample CSV, generate a forecast, and compare the forecast against known values. Contributions that add repeatable tests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-5. **Compare Accuracy**
-   - Load sample comparison
-   - Show accuracy metrics
-   - Display improvement suggestions
+## Deployment
 
----
+The repository contains no Dockerfile, Procfile, or platform-specific configuration. Deploy it as a standard Node.js service:
 
-## 🔧 Configuration Options
+```bash
+npm install --omit=dev
+npm start
+```
 
-### Without Gemini API (Default)
-- Uses statistical linear regression
-- 70-75% accuracy estimate
-- No API key required
-- Works offline
+Set `GEMINI_API_KEY` (optional) and `PORT` in the host's environment. Because models are stored in memory, a restart clears them and multiple instances do not share state. The static frontend is served by the same process. If you change the public port mapping, update `API_BASE_URL` in `public/app.js`.
 
-### With Gemini API (Optional)
-- AI-powered predictions
-- Higher accuracy potential
-- Requires API key
-- Get key from: https://makersuite.google.com/app/apikey
+Before a public deployment, replace the client-side demo login with real authentication, restrict CORS, add rate limiting, and avoid exposing the API without authorization.
 
----
+## Limitations and Disclaimers
 
-## 📈 Accuracy Metrics
+- **Demo authentication only.** `admin` / `admin123` is checked in browser JavaScript. The API has no auth middleware, so endpoints are reachable directly.
+- **No persistence.** Models, forecasts, and comparisons are in process memory only.
+- **Demonstration data.** Company names and CSV values are included for exercising the UI. They are not audited disclosures, and this project is not affiliated with the companies listed.
+- **Not compliance software.** Outputs are illustrative estimates and must not be used for GHG inventories, assurance, or regulatory filings without independent validation.
+- **Gemini is optional and fallible.** AI responses are parsed defensively and fall back to statistics, but generated text can still be incorrect.
+- **CORS is open.** `cors()` is enabled for all origins.
+- **Single port assumption.** The frontend hardcodes port 5000 for its API.
 
-| Metric | Description | Good Range |
-|--------|-------------|------------|
-| MAE | Mean Absolute Error | < 5% of mean |
-| MAPE | Mean Absolute Percentage Error | < 10% |
-| Accuracy Score | 100 - MAPE | > 90% |
-| Confidence Accuracy | % within CI | > 70% |
+## Contributing
 
----
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for local setup, branch naming, Conventional Commits, and the pull-request checklist. By participating you agree to [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Report vulnerabilities privately per [SECURITY.md](SECURITY.md).
 
-## 🐛 Troubleshooting
+## License
 
-### "Cannot connect to server"
-- Make sure Node.js is installed
-- Check if port 5000 is available
-- Try: `PORT=3000 npm run dev`
+Released under the [MIT License](LICENSE). Copyright (c) 2026 Ishan Vaidya.
 
-### "Training failed"
-- Ensure at least 3 years of data
-- Check CSV format (year, emissions)
-- Verify JSON is valid
+## Contact
 
-### "Model not found"
-- Train a model first
-- Refresh the model list
-- Check if server is running
-
----
-
-## 📜 License
-
-MIT License - Educational Project
-
----
-
-## 🙏 Credits
-
-- Chart.js for beautiful visualizations
-- Google Gemini API for AI enhancement
-- Inter font family from Google Fonts
-
----
-
-## 📧 Support
-
-For questions or issues, please refer to the project documentation or contact your instructor.
-
----
-
-**Made with ❤️ for Carbon Emission Prediction**
+Maintained by **Ishan Vaidya** — [ishan.vaidya01@gmail.com](mailto:ishan.vaidya01@gmail.com) — [github.com/ishanvaidya01](https://github.com/ishanvaidya01).

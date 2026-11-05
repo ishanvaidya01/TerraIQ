@@ -1,0 +1,96 @@
+name: Bug report
+description: Report a reproducible problem with TerraIQ
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Remove API keys, company data, and other secrets from logs before submitting.
+        For vulnerabilities, follow [SECURITY.md](https://github.com/ishanvaidya01/terraiq-backend/blob/main/SECURITY.md) instead.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem and its impact.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start with `npm run dev`
+        2. Sign in as admin
+        3. Train with data/sample_tesla.csv
+        4. ...
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Model training or upload parsing
+        - Forecast generation
+        - Accuracy comparison
+        - Discrepancy analysis / Gemini
+        - Dashboard, login, or charts
+        - Server startup or environment configuration
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: "e.g. 20.11.1 (run `node --version`)"
+    validations:
+      required: true
+  - type: dropdown
+    id: gemini
+    attributes:
+      label: Gemini key configured?
+      options:
+        - "No — statistical mode"
+        - "Yes — Gemini calls succeed"
+        - "Yes — Gemini calls fail or time out"
+        - Not applicable
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Minimal data sample
+      description: If relevant, include a few CSV rows or the JSON array that triggered the issue. Do not include confidential data.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      description: Do not include API keys, tokens, or private information.
+      render: shell
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues before opening this report.
+          required: true
+        - label: I removed API keys and confidential data from this report.
+          required: true
